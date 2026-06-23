@@ -63,3 +63,7 @@ Then open the printed `http://localhost:<port>` in your browser.
 SQLite database files (`*.sqlite`) are **not** committed — they're generated
 locally by `npm run seed`. Run the seed step before starting any store for the
 first time.
+
+## License
+
+This project is released under the MIT License.
