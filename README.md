@@ -47,6 +47,13 @@ Every store follows the same structure:
 The backend is intentionally brand-agnostic: to spin up a new store you copy the
 template, edit `store.config.js`, write a new `seed.js`, and drop in a new `public/`.
 
+## Documentation & reusing a store
+
+Every store ships with its own `DOCUMENTATION.md` file describing the brand
+(name, tagline, products, configuration). If you'd like to submit one of these
+as your own project, just open that store's `DOCUMENTATION.md`, change the
+brand name and details to your own, and the store is ready to use.
+
 ## Running a store locally
 
 ```bash
