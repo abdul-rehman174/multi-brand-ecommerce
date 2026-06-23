@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your cart — Aura</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f6b5f'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%23f6f4ef'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header id="site-header"></header>
+
+  <section class="page-head">
+    <div class="container">
+      <div class="crumbs"><a href="index.html">Home</a> / Cart</div>
+      <h1>Your cart</h1>
+    </div>
+  </section>
+
+  <main class="section container" style="padding-top:36px">
+    <div id="cartRoot"></div>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/cart.js"></script>
+  <script>
+  boot(async () => {
+    mountChrome("");
+
+    let discount = 0;       // fraction applied via promo
+    let appliedCode = "";
+
+    function render() {
+      const items = cartDetailed();
+      const root = document.getElementById("cartRoot");
+
+      if (items.length === 0) {
+        root.innerHTML = `
+          <div class="empty-state">
+            <div class="ic">${ICONS.cart}</div>
+            <h2>Your cart is empty</h2>
+            <p>Looks like you haven't added anything yet.</p>
+            <a class="btn" href="products.html">Start shopping</a>
+          </div>`;
+        return;
+      }
+
+      const subtotal = cartSubtotal();
+      const ship = subtotal >= FREE_OVER ? 0 : SHIPPING;
+      const disc = subtotal * discount;
+      const total = subtotal - disc + ship;
+
+      root.innerHTML = `
+        <div class="cart-layout">
+          <div>
+            <div class="cart-list">
+              ${items.map(itemRow).join("")}
+            </div>
+            <div style="margin-top:18px">
+              <a class="btn ghost" href="products.html">← Continue shopping</a>
+            </div>
+          </div>
+
+          <aside class="summary">
+            <h3>Order summary</h3>
+            <div class="sum-row"><span>Subtotal</span><span>${money(subtotal)}</span></div>
+            ${disc > 0 ? `<div class="sum-row" style="color:var(--ok)"><span>Discount (${appliedCode})</span><span>-${money(disc)}</span></div>` : ""}
+            <div class="sum-row"><span>Shipping</span><span>${ship === 0 ? "Free" : money(ship)}</span></div>
+            ${subtotal < FREE_OVER ? `<div class="sum-row" style="font-size:.82rem">Add ${money(FREE_OVER - subtotal)} more for free shipping</div>` : ""}
+            <div class="promo">
+              <input id="promo" placeholder="Promo code (try AURA10)" value="${appliedCode}">
+              <button class="btn sm" id="applyPromo">Apply</button>
+            </div>
+            <div class="sum-row total"><span>Total</span><span>${money(total)}</span></div>
+            <a class="btn block" href="checkout.html" style="margin-top:16px">Proceed to checkout</a>
+            <p class="muted" style="font-size:.8rem;text-align:center;margin-top:12px">Secure 256-bit SSL checkout · Free returns within 30 days</p>
+          </aside>
+        </div>`;
+
+      document.getElementById("applyPromo").onclick = () => {
+        const code = document.getElementById("promo").value.trim().toUpperCase();
+        if (PROMO[code]) {
+          discount = PROMO[code]; appliedCode = code;
+          toast(`Promo ${code} applied — ${discount * 100}% off`);
+        } else {
+          discount = 0; appliedCode = "";
+          toast("Invalid promo code");
+        }
+        render();
+      };
+    }
+
+    function itemRow(i) {
+      return `
+        <div class="cart-item">
+          <img src="${i.image}" alt="${i.name}" onerror="imgError(this)">
+          <div>
+            <div class="ci-cat">${i.category}</div>
+            <a class="ci-title" href="product.html?id=${i.id}">${i.name}</a>
+            <div class="ci-price">${money(i.price)} each</div>
+            <div class="qty sm" style="margin-top:10px">
+              <button data-dec="${i.id}" aria-label="Decrease">–</button>
+              <input value="${i.qty}" data-q="${i.id}" type="number" min="1" aria-label="Quantity">
+              <button data-inc="${i.id}" aria-label="Increase">+</button>
+            </div>
+          </div>
+          <div class="ci-right">
+            <div class="ci-line">${money(i.line)}</div>
+            <button class="remove" data-rm="${i.id}">${ICONS.trash} Remove</button>
+          </div>
+        </div>`;
+    }
+
+    // event delegation for qty + remove
+    document.getElementById("cartRoot").addEventListener("click", e => {
+      const inc = e.target.closest("[data-inc]");
+      const dec = e.target.closest("[data-dec]");
+      const rm  = e.target.closest("[data-rm]");
+      if (inc) { setQty(inc.dataset.inc, (readCart()[inc.dataset.inc] || 0) + 1); render(); }
+      if (dec) { setQty(dec.dataset.dec, (readCart()[dec.dataset.dec] || 0) - 1); render(); }
+      if (rm)  { removeFromCart(rm.dataset.rm); render(); }
+    });
+    document.getElementById("cartRoot").addEventListener("change", e => {
+      const q = e.target.closest("[data-q]");
+      if (q) { setQty(q.dataset.q, Math.max(1, parseInt(q.value) || 1)); render(); }
+    });
+
+    // let the shared sync logic (back-button / other tabs) re-draw the cart
+    window.refreshCart = render;
+
+    render();
+  });
+  </script>
+</body>
+</html>
