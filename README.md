@@ -19,11 +19,6 @@ a generic Express + SQLite backend that's customised per store through a single
 > Some stores share a default port — set `PORT` to run more than one at the same time
 > (e.g. `PORT=5001 npm start`).
 
-## Project status
-
-Active development. The shared engine is in place and the **Aura** store is the
-reference implementation; the remaining storefronts are being rolled out one at a time.
-
 ## Tech stack
 
 - **Backend:** Node.js + Express
