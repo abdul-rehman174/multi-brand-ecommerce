@@ -1,0 +1,16 @@
+{
+  "name": "brume-store",
+  "version": "1.0.0",
+  "description": "Brume — a full-stack specialty coffee roastery built with HTML/CSS/JS, Express and SQLite.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node seed.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.8.1",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
