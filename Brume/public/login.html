@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign in — Brume</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='3' fill='%233b2a21'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='20' fill='%23d9a25a' text-anchor='middle'%3EB%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header id="site-header"></header>
+
+  <main class="section container">
+    <div class="auth-wrap">
+      <div class="auth-card">
+        <h1>Welcome back</h1>
+        <p class="muted">Sign in to your Brume account to check out and track orders.</p>
+        <form id="loginForm" class="auth-form">
+          <div class="field"><label>Email address</label><input id="email" type="email" required placeholder="you@email.com"></div>
+          <div class="field"><label>Password</label><input id="password" type="password" required placeholder="••••••••"></div>
+          <div id="error" class="form-error" hidden></div>
+          <button class="btn block" type="submit" id="submitBtn">Sign in</button>
+        </form>
+        <p class="auth-alt">New to Brume? <a id="registerLink" href="register.html">Create an account</a></p>
+        <div class="demo-hint">
+          <b>Demo accounts</b>
+          <span>Customer — <code>demo@brume.com</code> / <code>demo123</code></span>
+          <span>Admin — <code>admin@brume.com</code> / <code>admin123</code></span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/cart.js"></script>
+  <script>
+  boot(async () => {
+    mountChrome("");
+    const next = new URLSearchParams(location.search).get("next");
+    if (next) document.getElementById("registerLink").href = "register.html?next=" + encodeURIComponent(next);
+    if (Auth.isLoggedIn()) { location.href = next || "index.html"; return; }
+
+    const form = document.getElementById("loginForm");
+    const errBox = document.getElementById("error");
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+      errBox.hidden = true;
+      const btn = document.getElementById("submitBtn");
+      btn.disabled = true; btn.textContent = "Signing in…";
+      try {
+        const { token, user } = await API.post("/auth/login", {
+          email: document.getElementById("email").value.trim(),
+          password: document.getElementById("password").value,
+        });
+        Auth.set(token, user);
+        toast("Signed in — welcome back!");
+        setTimeout(() => (location.href = next || "index.html"), 400);
+      } catch (err) {
+        errBox.textContent = err.message;
+        errBox.hidden = false;
+        btn.disabled = false; btn.textContent = "Sign in";
+      }
+    });
+  });
+  </script>
+</body>
+</html>

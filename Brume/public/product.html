@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product — Brume</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='3' fill='%233b2a21'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='20' fill='%23d9a25a' text-anchor='middle'%3EB%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header id="site-header"></header>
+
+  <main class="section container" style="padding-top:44px">
+    <div class="crumbs" id="crumbs" style="margin-bottom:28px"></div>
+    <div id="detail"><!-- filled by JS --></div>
+
+    <section style="margin-top:96px">
+      <div class="section-head"><div><span class="eyebrow">Pairs beautifully with</span><h2>You may also like</h2></div></div>
+      <div class="product-grid" id="related"></div>
+    </section>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/cart.js"></script>
+  <script>
+  boot(async () => {
+    mountChrome("products");
+
+    const id = new URLSearchParams(location.search).get("id");
+    const p = getProduct(id);
+    const detail = document.getElementById("detail");
+
+    if (!p) {
+      document.getElementById("crumbs").innerHTML = `<a href="index.html">Home</a> / <a href="products.html">Shop</a> / Not found`;
+      detail.innerHTML = `
+        <div class="empty-state">
+          <div class="ic">${ICONS.bag}</div>
+          <h2>Piece not found</h2>
+          <p>We couldn't find that item. It may have sold out or moved.</p>
+          <a class="btn" href="products.html">Back to the collection</a>
+        </div>`;
+    } else {
+      document.title = p.name + " — Brume";
+      document.getElementById("crumbs").innerHTML =
+        `<a href="index.html">Home</a> / <a href="products.html">Shop</a> / <a href="products.html">${p.category}</a> / ${p.name}`;
+
+      const old = p.oldPrice ? `<span class="was">${money(p.oldPrice)}</span>` : "";
+      const save = p.oldPrice
+        ? `<span class="tag sale" style="position:static;margin-left:12px">Save ${money(p.oldPrice - p.price)}</span>` : "";
+
+      detail.innerHTML = `
+        <div class="detail">
+          <div class="detail-media">
+            <img id="mainImg" src="${p.gallery[0]}" alt="${p.name}" onerror="imgError(this)">
+            ${p.gallery.length > 1 ? `
+            <div class="thumbs" id="thumbs">
+              ${p.gallery.map((g, i) =>
+                `<img src="${g}" data-i="${i}" class="${i === 0 ? "active" : ""}" alt="${p.name} view ${i + 1}" onerror="imgError(this)">`).join("")}
+            </div>` : ""}
+          </div>
+          <div class="detail-info">
+            <span class="card-cat">${p.category}</span>
+            <h1>${p.name}</h1>
+            <div class="rating" style="margin-top:10px">
+              <span class="stars">${starRow(p.rating)}</span> ${p.rating} · ${p.reviews} reviews
+            </div>
+            <div class="detail-price">${money(p.price)}${old}${save}</div>
+            <p class="detail-desc">${p.desc}</p>
+
+            <div class="detail-actions">
+              <div class="qty">
+                <button id="minus" aria-label="Decrease">–</button>
+                <input id="qty" type="number" value="1" min="1" aria-label="Quantity">
+                <button id="plus" aria-label="Increase">+</button>
+              </div>
+              <button class="btn" id="addBtn">${ICONS.cart} Add to cart</button>
+              <button class="btn ghost" id="buyNow">Buy now</button>
+            </div>
+
+            <div class="detail-meta">
+              <div><b>Availability</b> In stock — ships within 48 hours</div>
+              <div><b>Shipping</b> Free on orders over $50</div>
+              <div><b>Quality</b> Curated by the Brume roastery</div>
+              <div><b>Reference</b> BR-${p.id.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8)}</div>
+            </div>
+          </div>
+        </div>`;
+
+      // gallery thumbnails (only present when there's more than one image)
+      const thumbs = document.getElementById("thumbs");
+      if (thumbs) {
+        thumbs.addEventListener("click", e => {
+          const t = e.target.closest("img");
+          if (!t) return;
+          document.getElementById("mainImg").src = p.gallery[t.dataset.i];
+          thumbs.querySelectorAll("img").forEach(im => im.classList.toggle("active", im === t));
+        });
+      }
+
+      // quantity stepper
+      const qtyEl = document.getElementById("qty");
+      const clamp = () => { qtyEl.value = Math.max(1, parseInt(qtyEl.value) || 1); };
+      document.getElementById("minus").onclick = () => { qtyEl.value = Math.max(1, (parseInt(qtyEl.value) || 1) - 1); };
+      document.getElementById("plus").onclick  = () => { qtyEl.value = (parseInt(qtyEl.value) || 1) + 1; };
+      qtyEl.addEventListener("change", clamp);
+
+      document.getElementById("addBtn").onclick = () => {
+        clamp();
+        addToCart(p.id, parseInt(qtyEl.value));
+      };
+
+      // "Buy now" adds the item, then takes you straight to checkout
+      document.getElementById("buyNow").onclick = () => {
+        clamp();
+        addToCart(p.id, parseInt(qtyEl.value));
+        location.href = "checkout.html";
+      };
+
+      // related = other products, prefer same category
+      const related = [...PRODUCTS.filter(x => x.id !== p.id)]
+        .sort((a, b) => (b.category === p.category) - (a.category === p.category))
+        .slice(0, 4);
+      document.getElementById("related").innerHTML = related.map(productCardHTML).join("");
+    }
+  });
+  </script>
+</body>
+</html>

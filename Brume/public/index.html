@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brume — Small-batch coffee, roasted with care</title>
+  <meta name="description" content="Brume is a specialty coffee roaster — single-origin beans, signature blends, espresso machines and brewing gear. Small-batch coffee, roasted with care and shipped fresh.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='3' fill='%233b2a21'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='20' fill='%23d9a25a' text-anchor='middle'%3EB%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header id="site-header"></header>
+
+  <!-- ===== Hero ===== -->
+  <section class="hero">
+    <div class="container hero-grid" style="padding-inline:0">
+      <div class="hero-copy">
+        <span class="eyebrow">Roasted fresh · Small batch</span>
+        <h1>Coffee worth <span class="grad">slowing</span> down for.</h1>
+        <p class="lead">A specialty roaster of single-origin beans and signature blends — roasted to order in small batches and shipped within 48 hours, alongside the gear to brew them beautifully.</p>
+        <div class="hero-cta">
+          <a class="btn" href="products.html">Shop the coffee</a>
+          <a class="btn ghost" href="#featured">Browse brewing gear</a>
+        </div>
+        <div class="hero-stats">
+          <div><div class="num">48h</div><div class="lbl">From roast to bag</div></div>
+          <div><div class="num">4.8★</div><div class="lbl">Cupping score</div></div>
+          <div><div class="num">Free</div><div class="lbl">Shipping over $50</div></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <img src="assets/img/hero.jpg" alt="Freshly roasted coffee and a slow pour-over" onerror="if(window.imgError)imgError(this)">
+        <div class="hero-badge">
+          <span class="pill" id="hb-icon"></span>
+          <div><b>Free shipping</b><span>On orders over $50</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Feature strip ===== -->
+  <section class="container" id="features" style="padding-top:0;margin-top:-1px">
+    <div class="feature-strip" id="featureStrip"></div>
+  </section>
+
+  <!-- ===== Featured products ===== -->
+  <section class="section container" id="featured">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Roaster's picks</span>
+        <h2>The Brume selection</h2>
+      </div>
+      <a class="btn ghost" href="products.html">Shop all <span id="viewAllArrow"></span></a>
+    </div>
+    <div class="product-grid" id="featuredGrid"></div>
+  </section>
+
+  <!-- ===== Newsletter ===== -->
+  <section class="section container" style="padding-top:0">
+    <div class="cta-band" id="newsletter">
+      <span class="eyebrow">Join the club</span>
+      <h2>Join the Brume coffee club</h2>
+      <p>Get 10% off your first bag, first access to new roasts and brewing tips from our roasters — delivered fresh, never spam.</p>
+      <form class="hero-cta" style="justify-content:center" onsubmit="event.preventDefault(); this.reset(); toast('Welcome to the club — use code BRUME10');">
+        <input type="email" required placeholder="you@email.com"
+               style="border-radius:2px;padding:14px 18px;min-width:260px;font:inherit">
+        <button class="btn light" type="submit">Subscribe</button>
+      </form>
+    </div>
+  </section>
+
+  <footer id="site-footer"></footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/cart.js"></script>
+  <script>
+  boot(async () => {
+    mountChrome("home");
+
+    // hero badge + arrow icons
+    document.getElementById("hb-icon").innerHTML = ICONS.truck;
+    document.getElementById("viewAllArrow").innerHTML = ICONS.arrow;
+
+    // feature strip
+    const features = [
+      { ic: ICONS.truck,  t: "Free shipping",     s: "On orders over $50" },
+      { ic: ICONS.refresh,t: "Roasted to order",  s: "Shipped within 48h" },
+      { ic: ICONS.tag,    t: "Ethically sourced", s: "Direct-trade beans" },
+      { ic: ICONS.shield, t: "Small-batch",       s: "Always roasted fresh" }
+    ];
+    document.getElementById("featureStrip").innerHTML = features.map(f => `
+      <div class="feature">
+        <span class="ic">${f.ic}</span>
+        <div><b>${f.t}</b><br><span>${f.s}</span></div>
+      </div>`).join("");
+
+    // featured = a curated spread across the collection
+    document.getElementById("featuredGrid").innerHTML =
+      PRODUCTS.slice(0, 8).map(productCardHTML).join("");
+  });
+  </script>
+</body>
+</html>
