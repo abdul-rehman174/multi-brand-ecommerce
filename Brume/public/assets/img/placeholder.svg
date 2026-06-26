@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <rect width="600" height="600" fill="#efe4d4"/>
+  <g fill="none" stroke="#b5763e" stroke-width="2.5">
+    <path d="M225 250h120a16 16 0 0 1 16 16v44a60 60 0 0 1-60 60h-32a60 60 0 0 1-60-60v-44a16 16 0 0 1 16-16z"/>
+    <path d="M361 268h26a26 26 0 0 1 0 52h-26"/>
+    <path d="M250 210c0 14-10 14-10 26M285 206c0 14-10 14-10 26M320 210c0 14-10 14-10 26"/>
+  </g>
+  <text x="300" y="430" font-family="'DM Serif Display', Georgia, serif" font-size="34" letter-spacing="6" fill="#7a4d24" text-anchor="middle">BRUME</text>
+  <text x="300" y="462" font-family="Inter, sans-serif" font-size="15" letter-spacing="4" fill="#9b8b76" text-anchor="middle">NO IMAGE</text>
+</svg>
