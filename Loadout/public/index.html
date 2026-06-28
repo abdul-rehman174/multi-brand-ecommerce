@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loadout — Gear up. Game on.</title>
+  <meta name="description" content="Loadout is the happy place for gadgets — laptops, phones, audio, gaming and smart home gear with big color, big energy and zero boring. Gear up. Game on.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='1' y='1' width='30' height='30' rx='9' fill='%23ffc533' stroke='%231d1a39' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='7.5' fill='%23f72585' stroke='%231d1a39' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header id="site-header"></header>
+
+  <!-- ===== Hero (big centered headline + sticker party + polaroid shelf) ===== -->
+  <section class="hero">
+    <div class="container hero-inner">
+      <div class="hero-stickers">
+        <span class="sticker pink">New drops weekly</span>
+        <span class="sticker white">Free shipping $150+</span>
+        <span class="sticker blue">4.8★ happy humans</span>
+        <span class="sticker green">2-year warranty</span>
+      </div>
+      <h1>Gear up. <span class="grad">Game</span> on.</h1>
+      <p class="lead">Laptops, consoles, audio and pro-grade gaming gear with big color and big energy. Great specs, zero boring — build the setup you actually want.</p>
+      <div class="hero-cta">
+        <a class="btn" href="products.html">Shop the good stuff</a>
+        <a class="btn ghost" href="#featured">Show me favorites</a>
+      </div>
+      <div class="hero-stats">
+        <div><div class="num">21+</div><div class="lbl">Hand-picked gadgets</div></div>
+        <div><div class="num">4.8★</div><div class="lbl">Average rating</div></div>
+        <div><div class="num">30 days</div><div class="lbl">Easy returns</div></div>
+      </div>
+    </div>
+    <div class="container hero-gallery">
+      <a class="polaroid" href="product.html?id=aero-5g">
+        <img src="assets/img/aero-5g.jpg" alt="Loadout Aero 5G Smartphone" onerror="if(window.imgError)imgError(this)">
+        <figcaption>say cheese 📸</figcaption>
+      </a>
+      <a class="polaroid" href="product.html?id=apex-rtx-tower">
+        <img src="assets/img/apex-rtx.jpg" alt="Apex RTX Gaming Tower" onerror="if(window.imgError)imgError(this)">
+        <figcaption>frames for days 🎮</figcaption>
+      </a>
+      <a class="polaroid" href="product.html?id=boom-portable-speaker">
+        <img src="assets/img/boom-speaker.jpg" alt="Loadout Boom Portable Speaker" onerror="if(window.imgError)imgError(this)">
+        <figcaption>turn it up 🔊</figcaption>
+      </a>
+    </div>
+  </section>
+
+  <!-- ===== Feature strip ===== -->
+  <section class="section container" id="features" style="padding-bottom:0">
+    <div class="feature-strip" id="featureStrip"></div>
+  </section>
+
+  <!-- ===== Featured products ===== -->
+  <section class="section container" id="featured">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Crowd favorites</span>
+        <h2>Stuff everyone's grabbing</h2>
+      </div>
+      <a class="btn ghost" href="products.html">See it all <span id="viewAllArrow"></span></a>
+    </div>
+    <div class="product-grid" id="featuredGrid"></div>
+  </section>
+
+  <!-- ===== Newsletter coupon ticket ===== -->
+  <section class="section container" style="padding-top:0">
+    <div class="coupon" id="newsletter">
+      <div class="coupon-left">
+        <div class="coupon-off">10%<span>off</span></div>
+        <div class="coupon-code">CODE: LOADOUT10</div>
+      </div>
+      <div class="coupon-right">
+        <h2>Snag the friends-only coupon</h2>
+        <p>Drop your email, grab 10% off your first order, and get one snappy note whenever something genuinely fun lands. Zero spam — pinky promise.</p>
+        <form class="coupon-form" onsubmit="event.preventDefault(); this.reset(); toast('Woohoo, you are in! Use code LOADOUT10');">
+          <input type="email" required placeholder="you@email.com">
+          <button class="btn light" type="submit">Count me in!</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer id="site-footer"></footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/cart.js"></script>
+  <script>
+  boot(async () => {
+    mountChrome("home");
+
+    document.getElementById("viewAllArrow").innerHTML = ICONS.arrow;
+
+    // feature strip
+    const features = [
+      { ic: ICONS.truck,  t: "Zoomy free shipping", s: "On orders over $150" },
+      { ic: ICONS.refresh,t: "30-day boomerang",    s: "Returns, no questions" },
+      { ic: ICONS.shield, t: "2-year pinky promise",s: "Warranty on everything" },
+      { ic: ICONS.tag,    t: "Prices that high-five",s: "Fair deals, always" }
+    ];
+    document.getElementById("featureStrip").innerHTML = features.map(f => `
+      <div class="feature">
+        <span class="ic">${f.ic}</span>
+        <div><b>${f.t}</b><br><span>${f.s}</span></div>
+      </div>`).join("");
+
+    // featured = a curated spread across categories
+    document.getElementById("featuredGrid").innerHTML =
+      PRODUCTS.slice(0, 8).map(productCardHTML).join("");
+  });
+  </script>
+</body>
+</html>
