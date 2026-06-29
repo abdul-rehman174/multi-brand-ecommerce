@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout — Lumora</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%235b53ff'/%3E%3Ccircle cx='16' cy='16' r='6' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header id="site-header"></header>
+
+  <section class="page-head">
+    <div class="container">
+      <div class="crumbs"><a href="index.html">Home</a> / <a href="cart.html">Cart</a> / Checkout</div>
+      <h1>Checkout</h1>
+    </div>
+  </section>
+
+  <main class="section container" style="padding-top:36px">
+    <div id="checkoutRoot"></div>
+  </main>
+
+  <footer id="site-footer"></footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/cart.js"></script>
+  <script>
+  boot(async () => {
+    mountChrome("");
+
+    const root = document.getElementById("checkoutRoot");
+    const items = cartDetailed();
+
+    // 1) Must be signed in to place an order.
+    if (!Auth.isLoggedIn()) {
+      root.innerHTML = `
+        <div class="empty-state">
+          <div class="ic">${ICONS.user}</div>
+          <h2>Please sign in to check out</h2>
+          <p>You need an account to place an order and track it later.</p>
+          <div class="hero-cta" style="justify-content:center">
+            <a class="btn" href="login.html?next=checkout.html">Sign in</a>
+            <a class="btn ghost" href="register.html?next=checkout.html">Create account</a>
+          </div>
+        </div>`;
+      return;
+    }
+
+    // 2) Cart must have items.
+    if (items.length === 0) {
+      root.innerHTML = `
+        <div class="empty-state">
+          <div class="ic">${ICONS.cart}</div>
+          <h2>Nothing to check out</h2>
+          <p>Your cart is empty — add a few things first.</p>
+          <a class="btn" href="products.html">Browse products</a>
+        </div>`;
+      return;
+    }
+
+    const user = Auth.user() || {};
+    const subtotal = cartSubtotal();
+    const ship = subtotal >= FREE_OVER ? 0 : SHIPPING;
+    const tax = +(subtotal * 0.08).toFixed(2);
+    const total = subtotal + ship + tax;
+
+    root.innerHTML = `
+      <div class="checkout-layout">
+        <form id="checkoutForm">
+          <div class="form-card">
+            <h3><span class="step-no">1</span> Contact</h3>
+            <p class="sub">We'll send your receipt and order updates here.</p>
+            <div class="grid-2">
+              <div class="field full"><label>Email address</label><input id="f-email" type="email" required placeholder="you@email.com" value="${user.email || ""}"></div>
+              <div class="field"><label>First name</label><input id="f-first" required placeholder="Alex" value="${(user.name || "").split(" ")[0] || ""}"></div>
+              <div class="field"><label>Last name</label><input id="f-last" placeholder="Morgan" value="${(user.name || "").split(" ").slice(1).join(" ")}"></div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <h3><span class="step-no">2</span> Shipping address</h3>
+            <p class="sub">Where should we deliver your order?</p>
+            <div class="grid-2">
+              <div class="field full"><label>Street address</label><input id="f-address" required placeholder="123 Market Street"></div>
+              <div class="field"><label>City</label><input id="f-city" required placeholder="Lahore"></div>
+              <div class="field"><label>Postal code</label><input id="f-zip" required placeholder="54000"></div>
+              <div class="field full"><label>Country</label>
+                <select id="f-country">
+                  <option>Pakistan</option><option>United States</option>
+                  <option>United Kingdom</option><option>United Arab Emirates</option>
+                  <option>Canada</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <h3><span class="step-no">3</span> Payment</h3>
+            <p class="sub">This is a demo store — no real payment is taken.</p>
+            <div class="pay-methods" id="payMethods">
+              <div class="pay-opt active" data-pay="card">Credit card</div>
+              <div class="pay-opt" data-pay="paypal">PayPal</div>
+              <div class="pay-opt" data-pay="cod">Cash on delivery</div>
+            </div>
+            <div id="cardFields">
+              <div class="field"><label>Card number</label><input placeholder="4242 4242 4242 4242" inputmode="numeric"></div>
+              <div class="grid-2">
+                <div class="field"><label>Expiry</label><input placeholder="MM / YY"></div>
+                <div class="field"><label>CVC</label><input placeholder="123" inputmode="numeric"></div>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn block" type="submit" id="placeBtn" style="font-size:1.02rem;padding:15px">
+            Place order · ${money(total)} &nbsp;${ICONS.arrow}
+          </button>
+          <p class="muted" style="font-size:.8rem;text-align:center;margin-top:12px">
+            ${ICONS.shield} Your order is processed securely by the Lumora backend.
+          </p>
+        </form>
+
+        <aside class="summary">
+          <h3>Order summary</h3>
+          <div class="mini-items">
+            ${items.map(i => `
+              <div class="mini-item">
+                <img src="${i.image}" alt="${i.name}" onerror="imgError(this)">
+                <div>
+                  <div class="mi-name">${i.name}</div>
+                  <div class="mi-sub">${money(i.price)} × ${i.qty}</div>
+                </div>
+                <span class="mi-q">${money(i.line)}</span>
+              </div>`).join("")}
+          </div>
+          <div class="sum-row"><span>Subtotal</span><span>${money(subtotal)}</span></div>
+          <div class="sum-row"><span>Shipping</span><span>${ship === 0 ? "Free" : money(ship)}</span></div>
+          <div class="sum-row"><span>Tax (8%)</span><span>${money(tax)}</span></div>
+          <div class="sum-row total"><span>Total</span><span>${money(total)}</span></div>
+        </aside>
+      </div>`;
+
+    let payment = "card";
+    document.getElementById("payMethods").addEventListener("click", e => {
+      const opt = e.target.closest(".pay-opt");
+      if (!opt) return;
+      payment = opt.dataset.pay;
+      document.querySelectorAll(".pay-opt").forEach(o => o.classList.toggle("active", o === opt));
+      document.getElementById("cardFields").style.display = payment === "card" ? "" : "none";
+    });
+
+    document.getElementById("checkoutForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      const btn = document.getElementById("placeBtn");
+      const val = id => document.getElementById(id).value.trim();
+      const shipping = {
+        name: `${val("f-first")} ${val("f-last")}`.trim(),
+        email: val("f-email"),
+        address: val("f-address"),
+        city: val("f-city"),
+        zip: val("f-zip"),
+        country: val("f-country"),
+      };
+      btn.disabled = true;
+      btn.textContent = "Placing order…";
+      try {
+        const order = await API.post("/orders", {
+          items: items.map(i => ({ id: i.id, qty: i.qty })),
+          shipping,
+          payment,
+        }, true);
+        localStorage.removeItem(CART_KEY);
+        updateCartCount();
+        root.innerHTML = `
+          <div class="empty-state">
+            <div class="ic" style="background:var(--brand-100);color:var(--brand)">${ICONS.check}</div>
+            <h2>Order confirmed 🎉</h2>
+            <p>Thanks for your order! It has been saved to your account.<br>
+               Your order number is <b>#${order.number}</b> — total ${money(order.total)}.</p>
+            <div class="hero-cta" style="justify-content:center">
+              <a class="btn" href="orders.html">View my orders</a>
+              <a class="btn ghost" href="products.html">Continue shopping</a>
+            </div>
+          </div>`;
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } catch (err) {
+        toast(err.message || "Could not place order");
+        btn.disabled = false;
+        btn.innerHTML = `Place order · ${money(total)} &nbsp;${ICONS.arrow}`;
+      }
+    });
+  });
+  </script>
+</body>
+</html>
