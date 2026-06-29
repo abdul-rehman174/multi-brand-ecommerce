@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+<defs><pattern id="d" width="26" height="26" patternUnits="userSpaceOnUse"><circle cx="4" cy="4" r="2.4" fill="#1d1a39" opacity=".14"/></pattern></defs>
+<rect width="600" height="600" fill="#ffe0ee"/>
+<rect width="600" height="600" fill="url(#d)"/>
+<circle cx="300" cy="300" r="232" fill="#ffffff" stroke="#1d1a39" stroke-width="8"/>
+<g>
+    <rect x="150" y="170" width="300" height="260" rx="20" fill="#4361ee" stroke="#1d1a39" stroke-width="10"/>
+    <circle cx="300" cy="300" r="78" fill="#ffffff" stroke="#1d1a39" stroke-width="8"/>
+    <path d="M300 240 v44 M300 316 l40 26 M300 316 l-40 26 M300 316 l46 -16 M300 316 l-46 -16" stroke="#1d1a39" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="300" cy="300" r="14" fill="#ffc533" stroke="#1d1a39" stroke-width="6"/>
+    <path d="M450 230 q60 10 50 60" fill="none" stroke="#f72585" stroke-width="12" stroke-linecap="round"/>
+    <path d="M450 280 q50 16 40 60" fill="none" stroke="#ffc533" stroke-width="12" stroke-linecap="round"/>
+    <path d="M450 330 q40 20 30 60" fill="none" stroke="#0e9f6e" stroke-width="12" stroke-linecap="round"/></g>
+
+</svg>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <rect width="600" height="600" fill="#fff9ec"/>
+  <rect x="22" y="22" width="556" height="556" rx="26" fill="#fff1cf" stroke="#1d1a39" stroke-width="4"/>
+  <g fill="none" stroke="#1d1a39" stroke-width="5" opacity="0.9">
+    <rect x="220" y="215" width="160" height="130" rx="16" fill="#ffffff"/>
+    <circle cx="262" cy="257" r="14" fill="#ffc533"/>
+    <path d="M232 343l44-44 32 28 26-22 42 38"/>
+  </g>
+  <circle cx="455" cy="150" r="26" fill="#f72585" stroke="#1d1a39" stroke-width="4"/>
+  <circle cx="140" cy="430" r="18" fill="#4361ee" stroke="#1d1a39" stroke-width="4"/>
+  <text x="300" y="435" font-family="sans-serif" font-weight="bold" font-size="34" fill="#f72585" text-anchor="middle" letter-spacing="6">LOADOUT</text>
+  <text x="300" y="472" font-family="sans-serif" font-weight="bold" font-size="16" fill="#6e6893" text-anchor="middle" letter-spacing="3">PICTURE ON ITS WAY!</text>
+</svg>

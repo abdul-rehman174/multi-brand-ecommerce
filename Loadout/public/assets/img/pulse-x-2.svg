@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+<defs><pattern id="d" width="26" height="26" patternUnits="userSpaceOnUse"><circle cx="4" cy="4" r="2.4" fill="#1d1a39" opacity=".14"/></pattern></defs>
+<rect width="600" height="600" fill="#e0e7ff"/>
+<rect width="600" height="600" fill="url(#d)"/>
+<circle cx="300" cy="300" r="232" fill="#ffffff" stroke="#1d1a39" stroke-width="8"/>
+<g transform="translate(300 300) scale(1.16) translate(-300 -300)">
+    <rect x="212" y="92" width="176" height="376" rx="34" fill="#4361ee" stroke="#1d1a39" stroke-width="10"/>
+    <rect x="232" y="112" width="136" height="336" rx="20" fill="#ffffff" stroke="#1d1a39" stroke-width="6"/>
+    <rect x="272" y="124" width="56" height="14" rx="7" fill="#1d1a39"/>
+    <circle cx="300" cy="200" r="34" fill="#ffc533" stroke="#1d1a39" stroke-width="6"/>
+    <rect x="252" y="256" width="96" height="12" rx="6" fill="#f72585"/>
+    <rect x="252" y="282" width="76" height="10" rx="5" fill="#4361ee" opacity=".5"/>
+    <rect x="252" y="316" width="96" height="52" rx="12" fill="#4361ee" opacity=".25"/>
+    <rect x="272" y="414" width="56" height="10" rx="5" fill="#1d1a39"/></g>
+
+</svg>

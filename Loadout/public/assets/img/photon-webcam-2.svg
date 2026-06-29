@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+<defs><pattern id="d" width="26" height="26" patternUnits="userSpaceOnUse"><circle cx="4" cy="4" r="2.4" fill="#1d1a39" opacity=".14"/></pattern></defs>
+<rect width="600" height="600" fill="#fff1cf"/>
+<rect width="600" height="600" fill="url(#d)"/>
+<circle cx="300" cy="300" r="232" fill="#ffffff" stroke="#1d1a39" stroke-width="8"/>
+<g transform="translate(300 300) scale(1.16) translate(-300 -300)">
+    <circle cx="300" cy="245" r="95" fill="#ff8a3d" stroke="#1d1a39" stroke-width="10"/>
+    <circle cx="300" cy="245" r="50" fill="#1d1a39"/>
+    <circle cx="300" cy="245" r="24" fill="#4361ee"/>
+    <circle cx="312" cy="231" r="9" fill="#ffffff"/>
+    <circle cx="368" cy="186" r="9" fill="#ffc533" stroke="#1d1a39" stroke-width="5"/>
+    <rect x="282" y="340" width="36" height="44" fill="#1d1a39"/>
+    <path d="M210 384 H390 L370 452 H230 Z" fill="#ffffff" stroke="#1d1a39" stroke-width="10"/></g>
+
+</svg>

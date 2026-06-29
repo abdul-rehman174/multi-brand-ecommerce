@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+<defs><pattern id="d" width="26" height="26" patternUnits="userSpaceOnUse"><circle cx="4" cy="4" r="2.4" fill="#1d1a39" opacity=".14"/></pattern></defs>
+<rect width="600" height="600" fill="#ffe0ee"/>
+<rect width="600" height="600" fill="url(#d)"/>
+<circle cx="300" cy="300" r="232" fill="#ffffff" stroke="#1d1a39" stroke-width="8"/>
+<g transform="translate(300 300) scale(1.16) translate(-300 -300)">
+    <path d="M300 150 Q420 150 412 320 Q406 450 300 460 Q194 450 188 320 Q180 150 300 150 Z" fill="#f72585" stroke="#1d1a39" stroke-width="10"/>
+    <line x1="300" y1="155" x2="300" y2="265" stroke="#1d1a39" stroke-width="8"/>
+    <rect x="286" y="195" width="28" height="56" rx="14" fill="#ffc533" stroke="#1d1a39" stroke-width="7"/>
+    <path d="M225 350 Q300 396 375 350" fill="none" stroke="#1d1a39" stroke-width="7" stroke-linecap="round" stroke-dasharray="3 14"/></g>
+
+</svg>

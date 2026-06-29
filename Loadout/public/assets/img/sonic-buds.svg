@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+<defs><pattern id="d" width="26" height="26" patternUnits="userSpaceOnUse"><circle cx="4" cy="4" r="2.4" fill="#1d1a39" opacity=".14"/></pattern></defs>
+<rect width="600" height="600" fill="#fff1cf"/>
+<rect width="600" height="600" fill="url(#d)"/>
+<circle cx="300" cy="300" r="232" fill="#ffffff" stroke="#1d1a39" stroke-width="8"/>
+<g>
+    <rect x="190" y="290" width="220" height="160" rx="36" fill="#4361ee" stroke="#1d1a39" stroke-width="10"/>
+    <line x1="190" y1="338" x2="410" y2="338" stroke="#1d1a39" stroke-width="7"/>
+    <circle cx="300" cy="394" r="16" fill="#ffc533" stroke="#1d1a39" stroke-width="6"/>
+    <circle cx="245" cy="185" r="42" fill="#ffffff" stroke="#1d1a39" stroke-width="10"/>
+    <rect x="231" y="210" width="28" height="62" rx="14" fill="#ffffff" stroke="#1d1a39" stroke-width="8"/>
+    <circle cx="245" cy="180" r="13" fill="#4361ee"/>
+    <circle cx="365" cy="185" r="42" fill="#ffffff" stroke="#1d1a39" stroke-width="10"/>
+    <rect x="351" y="210" width="28" height="62" rx="14" fill="#ffffff" stroke="#1d1a39" stroke-width="8"/>
+    <circle cx="365" cy="180" r="13" fill="#4361ee"/></g>
+
+</svg>
