@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terrabloom — Bring the outside in</title>
+  <meta name="description" content="Terrabloom is a calm, botanical shop for indoor & outdoor plants, planters, seeds, tools and plant care. Grow something beautiful.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%233f6b4c'/%3E%3Cpath d='M16 24V13' stroke='%23bcd4b3' stroke-width='2.4' stroke-linecap='round'/%3E%3Cpath d='M16 15c-4 0-7-3-7-7 4 0 7 3 7 7z' fill='%236f9c6a'/%3E%3Cpath d='M16 18c4 0 7-3 7-7-4 0-7 3-7 7z' fill='%23bcd4b3'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header id="site-header"></header>
+
+  <!-- ===== Hero ===== -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <span class="eyebrow">Fresh greenery · Season 2026</span>
+        <h1>Bring the outside <span class="grad">in.</span></h1>
+        <p class="lead">Lovingly grown plants, handsome planters and everything you need to nurture them. Grow something beautiful, one leaf at a time.</p>
+        <div class="hero-cta">
+          <a class="btn" href="products.html">Shop all plants</a>
+          <a class="btn ghost" href="#featured">Browse favourites</a>
+        </div>
+        <div class="hero-stats">
+          <div><div class="num">12k+</div><div class="lbl">Plants rehomed</div></div>
+          <div><div class="num">4.8★</div><div class="lbl">Grower rating</div></div>
+          <div><div class="num">30-day</div><div class="lbl">Healthy-plant promise</div></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <img src="assets/img/img-b6132f4966bc.jpg" alt="A lush collection of Terrabloom plants" onerror="if(window.imgError)imgError(this)">
+        <div class="hero-badge">
+          <span class="pill" id="hb-icon"></span>
+          <div><b>Free shipping</b><span>On orders over $75</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Feature strip ===== -->
+  <section class="container" id="features" style="padding-top:8px">
+    <div class="feature-strip" id="featureStrip"></div>
+  </section>
+
+  <!-- ===== Featured products ===== -->
+  <section class="section container" id="featured">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Handpicked</span>
+        <h2>This season's favourites</h2>
+      </div>
+      <a class="btn ghost" href="products.html">View all <span id="viewAllArrow"></span></a>
+    </div>
+    <div class="product-grid" id="featuredGrid"></div>
+  </section>
+
+  <!-- ===== Newsletter ===== -->
+  <section class="section container" style="padding-top:0">
+    <div class="tb-signup" id="newsletter">
+      <div class="tb-signup-art" aria-hidden="true">
+        <span class="tb-leaf">🌿</span>
+        <span class="tb-dot tb-dot-1"></span>
+        <span class="tb-dot tb-dot-2"></span>
+      </div>
+      <div class="tb-signup-body">
+        <span class="eyebrow">Grow with us</span>
+        <h2>Join the Terrabloom garden club</h2>
+        <p>Seasonal planting guides, early access to new arrivals, and <b>10% off</b> your first order with code <b>GROW10</b>.</p>
+        <form class="tb-signup-form" onsubmit="event.preventDefault(); this.reset(); toast('Welcome to the club! Use code GROW10');">
+          <input type="email" required placeholder="you@email.com" aria-label="Email address">
+          <button class="btn" type="submit">Subscribe</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <footer id="site-footer"></footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/cart.js"></script>
+  <script>
+  boot(async () => {
+    mountChrome("home");
+
+    // hero badge + arrow icons
+    document.getElementById("hb-icon").innerHTML = ICONS.truck;
+    document.getElementById("viewAllArrow").innerHTML = ICONS.arrow;
+
+    // feature strip
+    const features = [
+      { ic: ICONS.truck,  t: "Free shipping",   s: "On orders over $75" },
+      { ic: ICONS.shield, t: "Healthy guarantee",s: "30 days, plant promise" },
+      { ic: ICONS.refresh,t: "Care support",    s: "Real growers, real advice" },
+      { ic: ICONS.tag,    t: "Grown with care", s: "Sustainably raised" }
+    ];
+    document.getElementById("featureStrip").innerHTML = features.map(f => `
+      <div class="feature">
+        <span class="ic">${f.ic}</span>
+        <div><b>${f.t}</b><br><span>${f.s}</span></div>
+      </div>`).join("");
+
+    // featured = a curated spread across categories
+    document.getElementById("featuredGrid").innerHTML =
+      PRODUCTS.slice(0, 8).map(productCardHTML).join("");
+  });
+  </script>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Terrabloom</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%233f6b4c'/%3E%3Cpath d='M16 24V13' stroke='%23bcd4b3' stroke-width='2.4' stroke-linecap='round'/%3E%3Cpath d='M16 15c-4 0-7-3-7-7 4 0 7 3 7 7z' fill='%236f9c6a'/%3E%3Cpath d='M16 18c4 0 7-3 7-7-4 0-7 3-7 7z' fill='%23bcd4b3'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header id="site-header"></header>
+
+  <section class="page-head">
+    <div class="container">
+      <div class="crumbs"><a href="index.html">Home</a> / Admin</div>
+      <h1>Admin dashboard</h1>
+      <p class="muted">Manage your plant catalogue and review orders.</p>
+    </div>
+  </section>
+
+  <main class="section container" style="padding-top:32px">
+    <div id="adminRoot"><p class="muted">Loading…</p></div>
+  </main>
+
+  <!-- Product add/edit modal -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 id="modalTitle">Add product</h3>
+        <button class="icon-btn" id="modalClose" aria-label="Close">✕</button>
+      </div>
+      <form id="productForm" class="admin-form">
+        <input type="hidden" id="p-id">
+        <div class="grid-2">
+          <div class="field full"><label>Product name *</label><input id="p-name" required></div>
+          <div class="field"><label>Category *</label><input id="p-category" list="cat-list" required><datalist id="cat-list"></datalist></div>
+          <div class="field"><label>Badge</label>
+            <select id="p-badge"><option value="">None</option><option value="New">New</option><option value="Sale">Sale</option></select>
+          </div>
+          <div class="field"><label>Price *</label><input id="p-price" type="number" step="0.01" min="0" required></div>
+          <div class="field"><label>Old price (optional)</label><input id="p-oldPrice" type="number" step="0.01" min="0"></div>
+          <div class="field"><label>Stock</label><input id="p-stock" type="number" min="0" value="100"></div>
+          <div class="field"><label>Rating (0–5)</label><input id="p-rating" type="number" step="0.1" min="0" max="5" value="4.5"></div>
+          <div class="field"><label>Reviews</label><input id="p-reviews" type="number" min="0" value="0"></div>
+          <div class="field full"><label>Image path / URL</label><input id="p-image" placeholder="assets/img/example.jpg"></div>
+          <div class="field full"><label>Description</label><textarea id="p-desc" rows="3"></textarea></div>
+          <label class="check full"><input type="checkbox" id="p-featured"> Show in featured section</label>
+        </div>
+        <div id="formError" class="form-error" hidden></div>
+        <div class="modal-actions">
+          <button type="button" class="btn ghost" id="cancelBtn">Cancel</button>
+          <button type="submit" class="btn" id="saveBtn">Save product</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <footer id="site-footer"></footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/products.js"></script>
+  <script src="js/cart.js"></script>
+  <script>
+  boot(async () => {
+    mountChrome("");
+    if (requireLogin("admin.html")) return;
+
+    const root = document.getElementById("adminRoot");
+    if (!Auth.isAdmin()) {
+      root.innerHTML = `
+        <div class="empty-state">
+          <div class="ic">${ICONS.shield}</div>
+          <h2>Admin access required</h2>
+          <p>You're signed in, but this area is for store administrators only.</p>
+          <a class="btn" href="index.html">Back to store</a>
+        </div>`;
+      return;
+    }
+
+    let products = [];
+    let activeTab = "products";
+
+    async function refresh() {
+      const [stats, prods] = await Promise.all([
+        API.get("/admin/stats", true),
+        API.get("/products"),
+      ]);
+      products = prods;
+      renderShell(stats);
+      if (activeTab === "products") renderProducts();
+      else await renderOrders();
+    }
+
+    function renderShell(stats) {
+      root.innerHTML = `
+        <div class="stat-grid">
+          <div class="stat"><div class="stat-num">${stats.products}</div><div class="stat-lbl">Products</div></div>
+          <div class="stat"><div class="stat-num">${stats.orders}</div><div class="stat-lbl">Orders</div></div>
+          <div class="stat"><div class="stat-num">${stats.users}</div><div class="stat-lbl">Customers</div></div>
+          <div class="stat"><div class="stat-num">${money(stats.revenue)}</div><div class="stat-lbl">Revenue</div></div>
+        </div>
+        <div class="admin-tabs">
+          <button class="tab ${activeTab === "products" ? "active" : ""}" data-tab="products">Products</button>
+          <button class="tab ${activeTab === "orders" ? "active" : ""}" data-tab="orders">Orders</button>
+          <button class="btn sm" id="addBtn" style="margin-left:auto">+ Add product</button>
+        </div>
+        <div id="tabBody"></div>`;
+
+      root.querySelectorAll(".tab").forEach(t => t.addEventListener("click", async () => {
+        activeTab = t.dataset.tab;
+        root.querySelectorAll(".tab").forEach(x => x.classList.toggle("active", x === t));
+        if (activeTab === "products") renderProducts(); else await renderOrders();
+      }));
+      root.querySelector("#addBtn").addEventListener("click", () => openModal());
+    }
+
+    function renderProducts() {
+      const body = document.getElementById("tabBody");
+      body.innerHTML = `
+        <div class="table-wrap">
+          <table class="admin-table">
+            <thead><tr><th></th><th>Name</th><th>Category</th><th>Price</th><th>Stock</th><th>Badge</th><th></th></tr></thead>
+            <tbody>
+              ${products.map(p => `
+                <tr>
+                  <td><img class="thumb" src="${p.image}" alt="" onerror="imgError(this)"></td>
+                  <td>${p.name}</td>
+                  <td>${p.category}</td>
+                  <td>${money(p.price)}${p.oldPrice ? ` <s class="muted">${money(p.oldPrice)}</s>` : ""}</td>
+                  <td>${p.stock}</td>
+                  <td>${p.badge ? `<span class="tag ${p.badge === "Sale" ? "sale" : ""}" style="position:static">${p.badge}</span>` : "—"}</td>
+                  <td class="row-actions">
+                    <button class="btn sm ghost" data-edit="${p.id}">Edit</button>
+                    <button class="btn sm danger" data-del="${p.id}">Delete</button>
+                  </td>
+                </tr>`).join("")}
+            </tbody>
+          </table>
+        </div>`;
+      body.querySelectorAll("[data-edit]").forEach(b =>
+        b.addEventListener("click", () => openModal(products.find(p => p.id === b.dataset.edit))));
+      body.querySelectorAll("[data-del]").forEach(b =>
+        b.addEventListener("click", () => deleteProduct(b.dataset.del)));
+    }
+
+    async function renderOrders() {
+      const body = document.getElementById("tabBody");
+      body.innerHTML = `<p class="muted">Loading orders…</p>`;
+      const orders = await API.get("/admin/orders", true);
+      if (!orders.length) { body.innerHTML = `<div class="empty-state"><h2>No orders yet</h2></div>`; return; }
+      const fmt = s => new Date((s || "").replace(" ", "T") + "Z").toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" });
+      body.innerHTML = `
+        <div class="table-wrap">
+          <table class="admin-table">
+            <thead><tr><th>Order</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th></tr></thead>
+            <tbody>
+              ${orders.map(o => `
+                <tr>
+                  <td>#${o.number}</td>
+                  <td>${o.customer_name}<br><span class="muted" style="font-size:.8rem">${o.email}</span></td>
+                  <td>${o.items.reduce((n, i) => n + i.qty, 0)}</td>
+                  <td>${money(o.total)}</td>
+                  <td><span class="status-pill ${o.status.toLowerCase()}">${o.status}</span></td>
+                  <td>${fmt(o.created_at)}</td>
+                </tr>`).join("")}
+            </tbody>
+          </table>
+        </div>`;
+    }
+
+    /* ---- modal (add / edit) ---- */
+    const modal = document.getElementById("modal");
+    const form = document.getElementById("productForm");
+    const errBox = document.getElementById("formError");
+
+    function openModal(product) {
+      errBox.hidden = true;
+      document.getElementById("cat-list").innerHTML =
+        [...new Set(products.map(p => p.category))].map(c => `<option value="${c}">`).join("");
+      document.getElementById("modalTitle").textContent = product ? "Edit product" : "Add product";
+      const g = id => document.getElementById(id);
+      g("p-id").value = product ? product.id : "";
+      g("p-name").value = product ? product.name : "";
+      g("p-category").value = product ? product.category : "";
+      g("p-badge").value = product ? (product.badge || "") : "";
+      g("p-price").value = product ? product.price : "";
+      g("p-oldPrice").value = product && product.oldPrice ? product.oldPrice : "";
+      g("p-stock").value = product ? product.stock : 100;
+      g("p-rating").value = product ? product.rating : 4.5;
+      g("p-reviews").value = product ? product.reviews : 0;
+      g("p-image").value = product ? product.image : "";
+      g("p-desc").value = product ? product.desc : "";
+      g("p-featured").checked = product ? !!product.featured : false;
+      modal.hidden = false;
+    }
+    function closeModal() { modal.hidden = true; }
+    document.getElementById("modalClose").addEventListener("click", closeModal);
+    document.getElementById("cancelBtn").addEventListener("click", closeModal);
+    modal.addEventListener("click", e => { if (e.target === modal) closeModal(); });
+
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+      errBox.hidden = true;
+      const g = id => document.getElementById(id).value;
+      const payload = {
+        name: g("p-name").trim(),
+        category: g("p-category").trim(),
+        badge: g("p-badge"),
+        price: g("p-price"),
+        oldPrice: g("p-oldPrice") || "",
+        stock: g("p-stock"),
+        rating: g("p-rating"),
+        reviews: g("p-reviews"),
+        image: g("p-image").trim(),
+        desc: g("p-desc"),
+        featured: document.getElementById("p-featured").checked,
+      };
+      const id = document.getElementById("p-id").value;
+      const btn = document.getElementById("saveBtn");
+      btn.disabled = true; btn.textContent = "Saving…";
+      try {
+        if (id) await API.put("/products/" + id, payload, true);
+        else await API.post("/products", payload, true);
+        toast("Product saved");
+        closeModal();
+        await refresh();
+      } catch (err) {
+        errBox.textContent = err.message; errBox.hidden = false;
+      } finally {
+        btn.disabled = false; btn.textContent = "Save product";
+      }
+    });
+
+    async function deleteProduct(id) {
+      const p = products.find(x => x.id === id);
+      if (!confirm(`Delete "${p ? p.name : id}"? This cannot be undone.`)) return;
+      try {
+        await API.del("/products/" + id, true);
+        toast("Product deleted");
+        await refresh();
+      } catch (err) { toast(err.message); }
+    }
+
+    await refresh();
+  });
+  </script>
+</body>
+</html>
