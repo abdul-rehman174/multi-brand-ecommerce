@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+  <rect width="600" height="600" fill="#e7efe2"/>
+  <rect x="40" y="40" width="520" height="520" rx="28" fill="#f3f6ee"/>
+  <g stroke="#9bb593" stroke-width="6" stroke-linecap="round" fill="none">
+    <path d="M300 400 V250"/>
+  </g>
+  <path d="M300 290c-46 0-80-34-80-78 44 0 80 34 80 78z" fill="#bcd4b3"/>
+  <path d="M300 330c46 0 80-34 80-78-44 0-80 34-80 78z" fill="#a8c79e"/>
+  <path d="M300 360c-34 0-60-26-60-58 32 0 60 26 60 58z" fill="#6f9c6a"/>
+  <ellipse cx="300" cy="430" rx="70" ry="22" fill="#c46b4a" opacity="0.85"/>
+  <rect x="240" y="430" width="120" height="60" rx="10" fill="#c46b4a"/>
+  <text x="300" y="540" font-family="Georgia, 'Times New Roman', serif" font-size="38" fill="#21271f" text-anchor="middle" font-weight="bold">Terrabloom</text>
+</svg>
